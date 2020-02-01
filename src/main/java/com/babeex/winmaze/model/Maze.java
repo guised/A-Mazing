@@ -31,6 +31,7 @@ public class Maze {
     /**
      * Hide default constructor
      */
+    @SuppressWarnings("unused")
     private Maze() {
     }
 

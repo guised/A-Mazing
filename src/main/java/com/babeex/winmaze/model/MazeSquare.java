@@ -1,7 +1,9 @@
 package com.babeex.winmaze.model;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to represent a single cell in a maze
@@ -128,17 +130,21 @@ public class MazeSquare {
     }
 
     public Side getNextOutDoorStartingFrom(Side start) {
+        return getNextOutDoorStartingFrom(start, new HashSet<Side>());
+    }
+
+    public Side getNextOutDoorStartingFrom(Side start, Set<Side> doorsTried) {
 
         Side x = start.getNext();
 
         while (x != start) {
-            if (x == Side.TOP && getTop() == SideType.DOOR_OUT) {
+            if (x == Side.TOP && getTop() == SideType.DOOR_OUT && !doorsTried.contains(Side.TOP)) {
                 return Side.TOP;
-            } else if (x == Side.RIGHT && getRight() == SideType.DOOR_OUT) {
+            } else if (x == Side.RIGHT && getRight() == SideType.DOOR_OUT && !doorsTried.contains(Side.RIGHT)) {
                 return Side.RIGHT;
-            } else if (x == Side.BOTTOM && getBottom() == SideType.DOOR_OUT) {
+            } else if (x == Side.BOTTOM && getBottom() == SideType.DOOR_OUT && !doorsTried.contains(Side.BOTTOM)) {
                 return Side.BOTTOM;
-            } else if (x == Side.LEFT && getLeft() == SideType.DOOR_OUT) {
+            } else if (x == Side.LEFT && getLeft() == SideType.DOOR_OUT && !doorsTried.contains(Side.LEFT)) {
                 return Side.LEFT;
             }
 
@@ -146,6 +152,7 @@ public class MazeSquare {
         }
 
         return null;
+
     }
 
     @Override

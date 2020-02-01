@@ -1,10 +1,13 @@
 package com.babeex.winmaze.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Stack;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -276,6 +279,11 @@ public class MazeFactory {
      */
     public void solveMaze(Maze maze) {
 
+        Stack<MazeSquare> path = new Stack<>();
+        path.push(maze.getStartSquare());
+
+        Map<MazeSquare, Set<Side>> sqrDoorsAttempted = new HashMap<>();
+
         ArrayList<MazeSquare> moveList = new ArrayList<>(maze.getWidth() * maze.getHeight());
         moveList.add(maze.getStartSquare());
 
@@ -290,15 +298,25 @@ public class MazeFactory {
                 maze.setCurrentSquare(moveList.get(sqnum));
                 maze.getCurrentSquare().setIsOnPath(Boolean.TRUE);
 
+                Set<Side> doorsTried = sqrDoorsAttempted.get(maze.getCurrentSquare());
+
+                if (doorsTried == null) {
+                    doorsTried = new HashSet<>();
+                    sqrDoorsAttempted.put(maze.getCurrentSquare(), doorsTried);
+                }
+
                 Side outDoorSide = maze.getCurrentSquare()
-                        .getNextOutDoorStartingFrom(maze.getCurrentSquare().getInDoor());
+                        .getNextOutDoorStartingFrom(maze.getCurrentSquare().getInDoor(), doorsTried);
 
                 if (outDoorSide == null || deadEndSqrs.contains(maze.getCurrentSquare())) {
                     deadEndSqrs.add(maze.getCurrentSquare());
                     maze.getCurrentSquare().setIsOnPath(Boolean.FALSE);
+                    path.pop();
                     moveList.remove(sqnum);
                     sqnum--;
                 } else {
+
+                    doorsTried.add(outDoorSide);
 
                     MazeSquare nextSquare = null;
 
@@ -321,6 +339,7 @@ public class MazeFactory {
                     maze.setCurrentSquare(nextSquare);
 
                     // mark the in door
+                    path.push(maze.getCurrentSquare());
                     moveList.add(maze.getCurrentSquare());
                     sqnum++;
                 }
