@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import com.babeex.winmaze.AppState;
 import com.babeex.winmaze.model.Maze;
 import com.babeex.winmaze.model.MazeFactory;
+import com.babeex.winmaze.model.solver.BreadthFirstSearchMazeSolver;
 
 public class MainGui extends JFrame {
 
@@ -199,7 +200,7 @@ public class MainGui extends JFrame {
 
                         @Override
                         protected Object doInBackground() throws Exception {
-                            MazeFactory.getInstance().solveMaze(maze);
+                            MazeFactory.getInstance().solveMaze(new BreadthFirstSearchMazeSolver(), maze);
                             return null;
                         }
 

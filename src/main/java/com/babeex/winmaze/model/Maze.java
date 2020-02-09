@@ -63,7 +63,7 @@ public class Maze {
         this.height = height;
     }
 
-    MazeSquare getStartSquare() {
+    public MazeSquare getStartSquare() {
         return startSquare;
     }
 
@@ -73,7 +73,7 @@ public class Maze {
         pcs.firePropertyChange(MAZE_CHANGE_EVENT, oldValue, startSquare);
     }
 
-    MazeSquare getEndSquare() {
+    public MazeSquare getEndSquare() {
         return endSquare;
     }
 
@@ -83,11 +83,11 @@ public class Maze {
         pcs.firePropertyChange(MAZE_CHANGE_EVENT, oldValue, endSquare);
     }
 
-    MazeSquare getCurrentSquare() {
+    public MazeSquare getCurrentSquare() {
         return currentSquare;
     }
 
-    void setCurrentSquare(MazeSquare currentSquare) {
+    public void setCurrentSquare(MazeSquare currentSquare) {
         MazeSquare oldValue = getCurrentSquare();
         this.currentSquare = currentSquare;
         pcs.firePropertyChange(MAZE_CHANGE_EVENT, oldValue, currentSquare);
