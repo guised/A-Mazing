@@ -21,7 +21,7 @@ public class BreadthFirstSearchMazeSolver implements MazeSolver {
     private static Logger logger = LogManager.getLogger();
 
     @Override
-    public void solve(Maze maze) {
+    public void solve(Maze maze, int delay) {
 
         Deque<MazeSquare> path = new ArrayDeque<>();
         path.push(maze.getStartSquare());
@@ -37,7 +37,7 @@ public class BreadthFirstSearchMazeSolver implements MazeSolver {
         try {
             while (maze.getCurrentSquare() != maze.getEndSquare()) {
 
-                Thread.sleep(0, 200);
+                Thread.sleep(0, delay);
 
                 maze.setCurrentSquare(moveList.get(sqnum));
                 maze.getCurrentSquare().setIsOnPath(Boolean.TRUE);

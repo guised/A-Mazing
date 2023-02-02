@@ -52,6 +52,8 @@ public class MainGui extends JFrame {
     JSpinner heightSpinner;
     JLabel squareSizeLbl;
     JSlider squareSizeSldr;
+    JLabel speedLbl;
+    JSlider speedSldr;
     JButton mazeButton;
     JButton solveButton;
     MazePanel mazePanel;
@@ -66,6 +68,8 @@ public class MainGui extends JFrame {
             controlsPnl.add(getHeightSpinner());
             controlsPnl.add(getSquareSizeLbl());
             controlsPnl.add(getSquareSizeSldr());
+            controlsPnl.add(getSpeedLbl());
+            controlsPnl.add(getSpeedSldr());
             controlsPnl.add(getMazeButton());
             controlsPnl.add(getSolveButton());
         }
@@ -132,6 +136,34 @@ public class MainGui extends JFrame {
             getSquareSizeLbl().setLabelFor(squareSizeSldr);
         }
         return squareSizeSldr;
+    }
+
+    private JLabel getSpeedLbl() {
+        if (speedLbl == null) {
+            speedLbl = new JLabel("Speed");
+        }
+        return speedLbl;
+    }
+
+    private JSlider getSpeedSldr() {
+        if (speedSldr == null) {
+            speedSldr = new JSlider(JSlider.HORIZONTAL, 0, 10, 5);
+            speedSldr.setMajorTickSpacing(5);
+            speedSldr.setMinorTickSpacing(1);
+            speedSldr.setPaintTicks(true);
+            speedSldr.setPaintLabels(true);
+
+            speedSldr.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent event) {
+                    int value = getSpeedSldr().getValue();
+                    MazeFactory.getInstance().setSpeed(value);
+                }
+            });
+
+            getSpeedLbl().setLabelFor(speedSldr);
+        }
+        return speedSldr;
     }
 
     private JButton getMazeButton() {

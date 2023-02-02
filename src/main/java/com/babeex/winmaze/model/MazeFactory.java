@@ -16,6 +16,8 @@ public class MazeFactory {
 
     private static MazeFactory instance = null;
 
+    private int delay = 100;
+
     private MazeFactory() {
     }
 
@@ -29,6 +31,18 @@ public class MazeFactory {
             }
         }
         return instance;
+    }
+
+    public void setSpeed(int speed) {
+        setDelay((int) Math.pow(speed, 2));
+    }
+
+    private int getDelay() {
+        return delay;
+    }
+
+    private void setDelay(int delay) {
+        this.delay = delay;
     }
 
     public Maze createEmpty(int width, int height) {
@@ -154,7 +168,7 @@ public class MazeFactory {
             while (sqnum >= 0) {
 
                 try {
-                    Thread.sleep(0, 100);
+                    Thread.sleep(0, getDelay());
                 } catch (InterruptedException e) {
                     return;
                 }
@@ -274,7 +288,7 @@ public class MazeFactory {
      * Solve a given maze
      */
     public void solveMaze(MazeSolver solver, Maze maze) {
-        solver.solve(maze);
+        solver.solve(maze, getDelay());
     }
 
     private static int getRandom(int x) {
