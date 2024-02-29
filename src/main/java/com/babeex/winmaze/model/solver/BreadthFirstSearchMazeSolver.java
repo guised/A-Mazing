@@ -18,80 +18,84 @@ import com.babeex.winmaze.model.exceptions.OutofBoundsException;
 
 public class BreadthFirstSearchMazeSolver implements MazeSolver {
 
-    private static Logger logger = LogManager.getLogger();
+	private static Logger logger = LogManager.getLogger();
 
-    @Override
-    public void solve(Maze maze, int delay) {
+	@Override
+	public void solve(Maze maze, int delay) {
 
-        Deque<MazeSquare> path = new ArrayDeque<>();
-        path.push(maze.getStartSquare());
+		maze.resetPath();
 
-        Map<MazeSquare, Set<Side>> sqrDoorsAttempted = new HashMap<>();
+		maze.setCurrentSquare(maze.getStartSquare());
 
-        ArrayList<MazeSquare> moveList = new ArrayList<>(maze.getWidth() * maze.getHeight());
-        moveList.add(maze.getStartSquare());
+		Deque<MazeSquare> path = new ArrayDeque<>();
+		path.push(maze.getStartSquare());
 
-        Set<MazeSquare> deadEndSqrs = new HashSet<>();
-        int sqnum = 0;
+		Map<MazeSquare, Set<Side>> sqrDoorsAttempted = new HashMap<>();
 
-        try {
-            while (maze.getCurrentSquare() != maze.getEndSquare()) {
+		ArrayList<MazeSquare> moveList = new ArrayList<>(maze.getWidth() * maze.getHeight());
+		moveList.add(maze.getStartSquare());
 
-                Thread.sleep(0, delay);
+		Set<MazeSquare> deadEndSqrs = new HashSet<>();
+		int sqnum = 0;
 
-                maze.setCurrentSquare(moveList.get(sqnum));
-                maze.getCurrentSquare().setIsOnPath(Boolean.TRUE);
+		try {
+			while (maze.getCurrentSquare() != maze.getEndSquare()) {
 
-                Set<Side> doorsTried = sqrDoorsAttempted.get(maze.getCurrentSquare());
+				Thread.sleep(0, delay);
 
-                if (doorsTried == null) {
-                    doorsTried = new HashSet<>();
-                    sqrDoorsAttempted.put(maze.getCurrentSquare(), doorsTried);
-                }
+				maze.setCurrentSquare(moveList.get(sqnum));
+				maze.getCurrentSquare().setIsOnPath(Boolean.TRUE);
 
-                Side outDoorSide = maze.getCurrentSquare()
-                        .getNextOutDoorStartingFrom(maze.getCurrentSquare().getInDoor(), doorsTried);
+				Set<Side> doorsTried = sqrDoorsAttempted.get(maze.getCurrentSquare());
 
-                if (outDoorSide == null || deadEndSqrs.contains(maze.getCurrentSquare())) {
-                    deadEndSqrs.add(maze.getCurrentSquare());
-                    maze.getCurrentSquare().setIsOnPath(Boolean.FALSE);
-                    path.pop();
-                    moveList.remove(sqnum);
-                    sqnum--;
-                } else {
+				if (doorsTried == null) {
+					doorsTried = new HashSet<>();
+					sqrDoorsAttempted.put(maze.getCurrentSquare(), doorsTried);
+				}
 
-                    doorsTried.add(outDoorSide);
+				Side outDoorSide = maze.getCurrentSquare()
+						.getNextOutDoorStartingFrom(maze.getCurrentSquare().getInDoor(), doorsTried);
 
-                    MazeSquare nextSquare = null;
+				if (outDoorSide == null || deadEndSqrs.contains(maze.getCurrentSquare())) {
+					deadEndSqrs.add(maze.getCurrentSquare());
+					maze.getCurrentSquare().setIsOnPath(Boolean.FALSE);
+					path.pop();
+					moveList.remove(sqnum);
+					sqnum--;
+				} else {
 
-                    // Move through out door to next square
-                    switch (outDoorSide) {
-                    case TOP:
-                        nextSquare = maze.getSquare(maze.getCurrentSquare().getX(), maze.getCurrentSquare().getY() - 1);
-                        break;
-                    case RIGHT:
-                        nextSquare = maze.getSquare(maze.getCurrentSquare().getX() + 1, maze.getCurrentSquare().getY());
-                        break;
-                    case BOTTOM:
-                        nextSquare = maze.getSquare(maze.getCurrentSquare().getX(), maze.getCurrentSquare().getY() + 1);
-                        break;
-                    case LEFT:
-                        nextSquare = maze.getSquare(maze.getCurrentSquare().getX() - 1, maze.getCurrentSquare().getY());
-                        break;
-                    }
+					doorsTried.add(outDoorSide);
 
-                    maze.setCurrentSquare(nextSquare);
+					MazeSquare nextSquare = null;
 
-                    // mark the in door
-                    path.push(maze.getCurrentSquare());
-                    moveList.add(maze.getCurrentSquare());
-                    sqnum++;
-                }
-            }
-        } catch (OutofBoundsException | InterruptedException e) {
-            logger.error(e);
-        }
+					// Move through out door to next square
+					switch (outDoorSide) {
+					case TOP:
+						nextSquare = maze.getSquare(maze.getCurrentSquare().getX(), maze.getCurrentSquare().getY() - 1);
+						break;
+					case RIGHT:
+						nextSquare = maze.getSquare(maze.getCurrentSquare().getX() + 1, maze.getCurrentSquare().getY());
+						break;
+					case BOTTOM:
+						nextSquare = maze.getSquare(maze.getCurrentSquare().getX(), maze.getCurrentSquare().getY() + 1);
+						break;
+					case LEFT:
+						nextSquare = maze.getSquare(maze.getCurrentSquare().getX() - 1, maze.getCurrentSquare().getY());
+						break;
+					}
 
-    }
+					maze.setCurrentSquare(nextSquare);
+
+					// mark the in door
+					path.push(maze.getCurrentSquare());
+					moveList.add(maze.getCurrentSquare());
+					sqnum++;
+				}
+			}
+		} catch (OutofBoundsException | InterruptedException e) {
+			logger.error(e);
+		}
+
+	}
 
 }

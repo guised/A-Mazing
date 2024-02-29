@@ -20,154 +20,209 @@ import com.babeex.winmaze.model.exceptions.OutofBoundsException;
 
 public class MazePanel extends JPanel {
 
-    private static Logger logger = LogManager.getLogger();
+	private static Logger logger = LogManager.getLogger();
 
-    private Maze mazeModel;
-    private int squareSize;
-    private AppState state = AppState.GENERATING;
+	private Maze mazeModel;
+	private int squareSize;
 
-    MazePanel() {
-    }
+	private Color backgroundColour = Color.BLACK;
+	private Color wallColour = Color.BLACK;
+	private Color generateColour = Color.RED;
+	private Color solveColour = Color.GREEN;
+	private float wallBrushWidth = 2;
+	private int offset = 5;
+	private AppState state = AppState.GENERATING;
 
-    public Maze getMazeModel() {
-        return mazeModel;
-    }
+	MazePanel() {
+	}
 
-    public void setMazeModel(Maze mazeModel) {
-        this.mazeModel = mazeModel;
-        this.mazeModel.addPropertyChangeListener(new MazePropertyChangeListener());
-    }
+	public Maze getMazeModel() {
+		return mazeModel;
+	}
 
-    public int getSquareSize() {
-        return squareSize;
-    }
+	public void setMazeModel(Maze mazeModel) {
+		this.mazeModel = mazeModel;
+		this.mazeModel.addPropertyChangeListener(new MazePropertyChangeListener());
+	}
 
-    public void setSquareSize(int squareSize) {
-        this.squareSize = squareSize;
-    }
+	public int getSquareSize() {
+		return squareSize;
+	}
 
-    public AppState getState() {
-        return state;
-    }
+	public void setSquareSize(int squareSize) {
+		this.squareSize = squareSize;
+	}
 
-    public void setState(AppState state) {
-        this.state = state;
-    }
+	public Color getBackgroundColour() {
+		return backgroundColour;
+	}
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3593493358997171653L;
+	public void setBackground(Color backgroundColour) {
+		this.backgroundColour = backgroundColour;
+	}
 
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+	public Color getWallColour() {
+		return wallColour;
+	}
 
-        if (getMazeModel() != null)
-            draw(g);
-    }
+	public void setWallColour(Color wallColour) {
+		this.wallColour = wallColour;
+	}
 
-    public void draw(Graphics g) {
+	public Color getGenerateColour() {
+		return generateColour;
+	}
 
-        float wallBrushWidth = 2;
-        Color wallColour = Color.BLACK;
-        Color pathColour = Color.RED;
+	public void setGenerateColour(Color generateColour) {
+		this.generateColour = generateColour;
+	}
 
-        if (getState() == AppState.SOLVING) {
-            pathColour = Color.GREEN;
-        }
+	public Color getSolveColour() {
+		return solveColour;
+	}
 
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(wallColour);
-        g2.setStroke(new BasicStroke(wallBrushWidth));
+	public void setSolveColour(Color solveColour) {
+		this.solveColour = solveColour;
+	}
 
-        int yOffset = 6;
-        int wallSize = getSquareSize();
+	private float getWallBrushWidth() {
+		return this.wallBrushWidth;
+	}
 
-        try {
+	private void setWallBrushWidth(float wallBrushWidth) {
+		this.wallBrushWidth = wallBrushWidth;
+	}
 
-            for (int y = 0; y < getMazeModel().getHeight(); y++) {
-                int xOffset = 5;
-                for (int x = 0; x < getMazeModel().getWidth(); x++) {
-                    MazeSquare sqr = getMazeModel().getSquare(x, y);
-                    logger.debug(sqr);
-                    // Top
-                    if (sqr.getTop() == SideType.WALL)
-                        g2.drawLine(xOffset, yOffset, xOffset + wallSize, yOffset);
-                    // Right
-                    if (sqr.getRight() == SideType.WALL)
-                        g2.drawLine(xOffset + wallSize, yOffset, xOffset + wallSize, yOffset + wallSize);
-                    // Bottom
-                    if (sqr.getBottom() == SideType.WALL)
-                        g2.drawLine(xOffset, yOffset + wallSize, xOffset + wallSize, yOffset + wallSize);
-                    // Left
-                    if (sqr.getLeft() == SideType.WALL)
-                        g2.drawLine(xOffset, yOffset, xOffset, yOffset + wallSize);
+	private int getOffset() {
+		return this.offset;
+	}
 
-                    if (sqr.isOnPath()) {
-                        g2.setColor(pathColour);
+	private void setOffset(int offset) {
+		this.offset = offset;
+	}
 
-                        float pathBrushWidth = Math.max(1, wallSize - (2 * wallBrushWidth));
+	public AppState getState() {
+		return state;
+	}
 
-                        g2.setStroke(new BasicStroke(pathBrushWidth));
+	public void setState(AppState state) {
+		this.state = state;
+	}
 
-                        // Top
-                        if (sqr.getTop() == SideType.DOOR_IN)
-                            g2.drawLine(xOffset + (wallSize / 2), yOffset, xOffset + (wallSize / 2),
-                                    yOffset + (wallSize / 2));
-                        // Right
-                        if (sqr.getRight() == SideType.DOOR_IN)
-                            g2.drawLine(xOffset + wallSize, yOffset + (wallSize / 2), xOffset + (wallSize / 2),
-                                    yOffset + (wallSize / 2));
-                        // Bottom
-                        if (sqr.getBottom() == SideType.DOOR_IN)
-                            g2.drawLine(xOffset + (wallSize / 2), yOffset + wallSize, xOffset + (wallSize / 2),
-                                    yOffset + (wallSize / 2));
-                        // Left
-                        if (sqr.getLeft() == SideType.DOOR_IN)
-                            g2.drawLine(xOffset, yOffset + (wallSize / 2), xOffset + (wallSize / 2),
-                                    yOffset + (wallSize / 2));
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3593493358997171653L;
 
-                        // Top
-                        if (sqr.getTop() == SideType.DOOR_OUT)
-                            g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset + (wallSize / 2),
-                                    yOffset);
-                        // Right
-                        if (sqr.getRight() == SideType.DOOR_OUT)
-                            g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset + wallSize,
-                                    yOffset + (wallSize / 2));
-                        // Bottom
-                        if (sqr.getBottom() == SideType.DOOR_OUT)
-                            g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset + (wallSize / 2),
-                                    yOffset + wallSize);
-                        // Left
-                        if (sqr.getLeft() == SideType.DOOR_OUT)
-                            g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset,
-                                    yOffset + (wallSize / 2));
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 
-                        g2.setColor(wallColour);
-                        g2.setStroke(new BasicStroke(wallBrushWidth));
-                    }
+		if (getMazeModel() != null)
+			draw(g);
+	}
 
-                    xOffset = xOffset + wallSize;
-                }
-                yOffset = yOffset + wallSize;
-            }
+	private void drawSquare(Graphics2D g2, MazeSquare sqr) {
 
-        } catch (OutofBoundsException e) {
-            logger.error(e);
-        }
-    }
+		Color pathColour = getGenerateColour();
 
-    private class MazePropertyChangeListener implements PropertyChangeListener {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            logger.debug("Event received " + evt);
+		if (getState() == AppState.SOLVING) {
+			pathColour = getSolveColour();
+		}
 
-            if (evt.getPropertyName().equals(Maze.MAZE_CHANGE_EVENT)) {
-                MazePanel.this.repaint();
-            }
-        }
-    }
+		g2.setBackground(getBackgroundColour());
+		g2.setColor(getWallColour());
+		g2.setStroke(new BasicStroke(getWallBrushWidth()));
+
+		int wallSize = getSquareSize();
+
+		int yOffset = getOffset() + sqr.getY() * wallSize;
+		int xOffset = getOffset() + sqr.getX() * wallSize;
+
+		logger.debug(sqr);
+		// Top
+		if (sqr.getTop() == SideType.WALL)
+			g2.drawLine(xOffset, yOffset, xOffset + wallSize, yOffset);
+		// Right
+		if (sqr.getRight() == SideType.WALL)
+			g2.drawLine(xOffset + wallSize, yOffset, xOffset + wallSize, yOffset + wallSize);
+		// Bottom
+		if (sqr.getBottom() == SideType.WALL)
+			g2.drawLine(xOffset, yOffset + wallSize, xOffset + wallSize, yOffset + wallSize);
+		// Left
+		if (sqr.getLeft() == SideType.WALL)
+			g2.drawLine(xOffset, yOffset, xOffset, yOffset + wallSize);
+
+		if (sqr.isOnPath()) {
+			g2.setColor(pathColour);
+
+			float pathBrushWidth = Math.max(1, wallSize - (2 * getWallBrushWidth()));
+
+			g2.setStroke(new BasicStroke(pathBrushWidth));
+
+			// Top
+			if (sqr.getTop() == SideType.DOOR_IN)
+				g2.drawLine(xOffset + (wallSize / 2), yOffset, xOffset + (wallSize / 2), yOffset + (wallSize / 2));
+			// Right
+			if (sqr.getRight() == SideType.DOOR_IN)
+				g2.drawLine(xOffset + wallSize, yOffset + (wallSize / 2), xOffset + (wallSize / 2),
+						yOffset + (wallSize / 2));
+			// Bottom
+			if (sqr.getBottom() == SideType.DOOR_IN)
+				g2.drawLine(xOffset + (wallSize / 2), yOffset + wallSize, xOffset + (wallSize / 2),
+						yOffset + (wallSize / 2));
+			// Left
+			if (sqr.getLeft() == SideType.DOOR_IN)
+				g2.drawLine(xOffset, yOffset + (wallSize / 2), xOffset + (wallSize / 2), yOffset + (wallSize / 2));
+
+			// Top
+			if (sqr.getTop() == SideType.DOOR_OUT)
+				g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset + (wallSize / 2), yOffset);
+			// Right
+			if (sqr.getRight() == SideType.DOOR_OUT)
+				g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset + wallSize,
+						yOffset + (wallSize / 2));
+			// Bottom
+			if (sqr.getBottom() == SideType.DOOR_OUT)
+				g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset + (wallSize / 2),
+						yOffset + wallSize);
+			// Left
+			if (sqr.getLeft() == SideType.DOOR_OUT)
+				g2.drawLine(xOffset + (wallSize / 2), yOffset + (wallSize / 2), xOffset, yOffset + (wallSize / 2));
+
+			g2.setColor(getWallColour());
+			g2.setStroke(new BasicStroke(getWallBrushWidth()));
+		}
+
+	}
+
+	public void draw(Graphics g) {
+
+		try {
+
+			Graphics2D g2 = (Graphics2D) g;
+
+			for (int y = 0; y < getMazeModel().getHeight(); y++) {
+				for (int x = 0; x < getMazeModel().getWidth(); x++) {
+					MazeSquare sqr = getMazeModel().getSquare(x, y);
+					drawSquare(g2, sqr);
+				}
+			}
+
+		} catch (OutofBoundsException e) {
+			logger.error(e);
+		}
+	}
+
+	private class MazePropertyChangeListener implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			logger.debug("Event received " + evt);
+
+			if (evt.getPropertyName().equals(Maze.MAZE_CHANGE_EVENT)) {
+				MazePanel.this.repaint();
+			}
+		}
+	}
 
 }
